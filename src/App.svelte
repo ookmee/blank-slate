@@ -139,23 +139,7 @@
   }
   
   /* Language toggle */
-  .language-toggle {
-    position: fixed;
-    top: 10px;
-    right: 10px;
-    z-index: 1000;
-  }
-  
-  .language-toggle button {
-    background-color: #3b82f6;
-    color: white;
-    padding: 4px 8px;
-    border-radius: 4px;
-    font-size: 12px;
-    border: none;
-    cursor: pointer;
-    box-shadow: 0 1px 2px rgba(0,0,0,0.1);
-  }
+  /* Language toggle is now in ContentArea */
   
   /* Desktop layout */
   .desktop-layout {

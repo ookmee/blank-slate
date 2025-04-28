@@ -1,10 +1,30 @@
 <!-- src/lib/ContentArea.svelte -->
 <script lang="ts">
-    import { _ } from 'svelte-i18n';
+    import { _, locale } from 'svelte-i18n';
     import Counter from './Counter.svelte';
     import WasmBasis from './WasmBasis.svelte';
     
     export let activeTab: string = 'login';
+    
+    // Function to toggle language
+    function toggleLanguage() {
+      try {
+        locale.update(currentLocale => {
+          const newLocale = currentLocale === 'en' ? 'nl' : 'en';
+          console.log(`Switching locale from ${currentLocale} to ${newLocale}`);
+          return newLocale;
+        });
+      } catch (error) {
+        console.error('Error toggling language:', error);
+        // Fallback to direct setting
+        try {
+          const newLocale = locale.get() === 'en' ? 'nl' : 'en';
+          locale.set(newLocale);
+        } catch (fallbackError) {
+          console.error('Fallback language toggle failed:', fallbackError);
+        }
+      }
+    }
   </script>
   
   <div class="content-area">
@@ -24,6 +44,20 @@
       {:else if activeTab === 'settings'}
         <h2 class="content-title">{$_('nav.settings')}</h2>
         <p>{$_('content.settings')}</p>
+        
+        <!-- Taal wissel sectie -->
+        <div class="settings-section">
+          <h3 class="settings-section-title">Taalinstellingen</h3>
+          <div class="settings-option">
+            <span class="settings-label">Huidige taal</span>
+            <button class="language-button" on:click={toggleLanguage}>
+              <svg xmlns="http://www.w3.org/2000/svg" class="language-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129" />
+              </svg>
+              Nederlands / English
+            </button>
+          </div>
+        </div>
       
       {:else if activeTab === 'tokenStash'}
         <h2 class="content-title">{$_('bottomNav.tokenStash')}</h2>
@@ -88,6 +122,55 @@
       font-weight: 700;
       margin-bottom: 16px;
       color: #111827;
+    }
+    
+    /* Settings styling */
+    .settings-section {
+      margin-top: 32px;
+      padding-top: 16px;
+      border-top: 1px solid #e5e7eb;
+    }
+    
+    .settings-section-title {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 16px;
+      color: #374151;
+    }
+    
+    .settings-option {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 0;
+    }
+    
+    .settings-label {
+      font-size: 16px;
+      color: #4b5563;
+    }
+    
+    .language-button {
+      display: flex;
+      align-items: center;
+      padding: 8px 16px;
+      background-color: #f3f4f6;
+      border: 1px solid #e5e7eb;
+      border-radius: 6px;
+      color: #374151;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    
+    .language-button:hover {
+      background-color: #e5e7eb;
+    }
+    
+    .language-icon {
+      width: 20px;
+      height: 20px;
+      margin-right: 8px;
     }
     
     /* Demo section styling */
