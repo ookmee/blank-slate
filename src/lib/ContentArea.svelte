@@ -1,5 +1,5 @@
 <!-- src/lib/ContentArea.svelte -->
-    <script lang="ts">
+<script lang="ts">
     import { _ } from 'svelte-i18n';
     import Counter from './Counter.svelte';
     import WasmBasis from './WasmBasis.svelte';
@@ -7,72 +7,160 @@
     export let activeTab: string = 'login';
   </script>
   
-  <div class="flex-1 bg-gray-50 pb-24 mb-14 md:ml-64 md:mb-0 md:pb-4">
-    <div class="max-w-screen-lg mx-auto pt-4 px-4">
+  <div class="content-area">
+    <div class="content-card">
       {#if activeTab === 'login'}
-        <div class="bg-white p-6 rounded-b-lg rounded-tr-lg shadow-sm border-t-4 border-blue-600 md:rounded-lg md:border-l-4 md:border-t-0">
-          <h2 class="text-2xl font-bold mb-4">{$_('nav.login')}</h2>
-          <p>{$_('content.login')}</p>
-        </div>
+        <h2 class="content-title">{$_('nav.login')}</h2>
+        <p>{$_('content.login')}</p>
+      
       {:else if activeTab === 'listen'}
-        <div class="bg-white p-6 rounded-b-lg rounded-tr-lg shadow-sm border-t-4 border-blue-600 md:rounded-lg md:border-l-4 md:border-t-0">
-          <h2 class="text-2xl font-bold mb-4">{$_('nav.listen')}</h2>
-          <p>{$_('content.listen')}</p>
-        </div>
+        <h2 class="content-title">{$_('nav.listen')}</h2>
+        <p>{$_('content.listen')}</p>
+      
       {:else if activeTab === 'advertise'}
-        <div class="bg-white p-6 rounded-b-lg rounded-tr-lg shadow-sm border-t-4 border-blue-600 md:rounded-lg md:border-l-4 md:border-t-0">
-          <h2 class="text-2xl font-bold mb-4">{$_('nav.advertise')}</h2>
-          <p>{$_('content.advertise')}</p>
-        </div>
+        <h2 class="content-title">{$_('nav.advertise')}</h2>
+        <p>{$_('content.advertise')}</p>
+      
       {:else if activeTab === 'settings'}
-        <div class="bg-white p-6 rounded-b-lg rounded-tr-lg shadow-sm border-t-4 border-blue-600 md:rounded-lg md:border-l-4 md:border-t-0">
-          <h2 class="text-2xl font-bold mb-4">{$_('nav.settings')}</h2>
-          <p>{$_('content.settings')}</p>
-        </div>
+        <h2 class="content-title">{$_('nav.settings')}</h2>
+        <p>{$_('content.settings')}</p>
+      
       {:else if activeTab === 'tokenStash'}
-        <div class="bg-white p-6 rounded-t-lg rounded-br-lg shadow-sm border-b-4 border-blue-600 md:rounded-lg md:border-l-4 md:border-b-0">
-          <h2 class="text-2xl font-bold mb-4">{$_('bottomNav.tokenStash')}</h2>
-          <p>{$_('content.tokenStash')}</p>
-        </div>
+        <h2 class="content-title">{$_('bottomNav.tokenStash')}</h2>
+        <p>{$_('content.tokenStash')}</p>
+      
       {:else if activeTab === 'tokenActions'}
-        <div class="bg-white p-6 rounded-t-lg rounded-br-lg shadow-sm border-b-4 border-blue-600 md:rounded-lg md:border-l-4 md:border-b-0">
-          <h2 class="text-2xl font-bold mb-4">{$_('bottomNav.tokenActions')}</h2>
-          <p>{$_('content.tokenActions')}</p>
-        </div>
+        <h2 class="content-title">{$_('bottomNav.tokenActions')}</h2>
+        <p>{$_('content.tokenActions')}</p>
+      
       {:else if activeTab === 'more'}
-        <div class="bg-white p-6 rounded-t-lg rounded-br-lg shadow-sm border-b-4 border-blue-600 md:rounded-lg md:border-l-4 md:border-b-0">
-          <h2 class="text-2xl font-bold mb-4">{$_('bottomNav.more')}</h2>
-          <p class="mb-6">{$_('content.more')}</p>
+        <h2 class="content-title">{$_('bottomNav.more')}</h2>
+        <p class="mb-24">{$_('content.more')}</p>
+        
+        <!-- Original App.svelte content -->
+        <div class="demo-section">
+          <h3 class="demo-title">Blank Slate</h3>
+          <h4 class="demo-subtitle">Met WASM integratie</h4>
           
-          <!-- Original App.svelte content -->
-          <div class="mt-8">
-            <h3 class="text-xl font-bold text-center mb-2">Blank Slate</h3>
-            <h4 class="text-lg font-medium text-center mb-8">Met WASM integratie</h4>
-            
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-3xl mx-auto">
-              <div class="card p-4 border rounded-lg">
-                <h3 class="text-xl font-bold mb-4">Counter Component</h3>
-                <Counter />
-                <p class="mt-4 text-sm text-gray-500">
-                  Deze counter werkt via Svelte's state management
-                </p>
-              </div>
-  
-              <div class="card p-4 border rounded-lg">
-                <WasmBasis />
-              </div>
+          <div class="demo-grid">
+            <div class="demo-card">
+              <h3 class="demo-card-title">Counter Component</h3>
+              <Counter />
+              <p class="demo-card-description">
+                Deze counter werkt via Svelte's state management
+              </p>
             </div>
   
-            <div class="max-w-3xl mx-auto mt-8">
-              <h3 class="text-xl font-bold mb-4">PWA-functies testen:</h3>
-              <ol class="list-decimal pl-6 space-y-2">
-                <li>Schakel het netwerk uit en herlaad de pagina</li>
-                <li>Als de applicatie nog steeds werkt, functioneert de service worker correct</li>
-                <li>De counter en WASM-demo blijven werken, zelfs zonder internetverbinding</li>
-              </ol>
+            <div class="demo-card">
+              <WasmBasis />
             </div>
+          </div>
+  
+          <div class="pwa-section">
+            <h3 class="demo-card-title">PWA-functies testen:</h3>
+            <ol class="pwa-list">
+              <li>Schakel het netwerk uit en herlaad de pagina</li>
+              <li>Als de applicatie nog steeds werkt, functioneert de service worker correct</li>
+              <li>De counter en WASM-demo blijven werken, zelfs zonder internetverbinding</li>
+            </ol>
           </div>
         </div>
       {/if}
     </div>
   </div>
+  
+  <style>
+    .content-area {
+      max-width: 1024px;
+      margin: 0 auto;
+    }
+    
+    .content-card {
+      background-color: white;
+      padding: 24px;
+      border-radius: 8px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      border-left: 4px solid #2563eb;
+    }
+    
+    .content-title {
+      font-size: 24px;
+      font-weight: 700;
+      margin-bottom: 16px;
+      color: #111827;
+    }
+    
+    /* Demo section styling */
+    .demo-section {
+      margin-top: 32px;
+    }
+    
+    .demo-title {
+      font-size: 20px;
+      font-weight: 700;
+      text-align: center;
+      margin-bottom: 8px;
+      color: #111827;
+    }
+    
+    .demo-subtitle {
+      font-size: 18px;
+      font-weight: 500;
+      text-align: center;
+      margin-bottom: 32px;
+      color: #4b5563;
+    }
+    
+    .demo-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 24px;
+      max-width: 768px;
+      margin: 0 auto;
+    }
+    
+    @media (min-width: 768px) {
+      .demo-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+    
+    .demo-card {
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      padding: 16px;
+    }
+    
+    .demo-card-title {
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 16px;
+      color: #111827;
+    }
+    
+    .demo-card-description {
+      margin-top: 16px;
+      font-size: 14px;
+      color: #6b7280;
+    }
+    
+    .pwa-section {
+      max-width: 768px;
+      margin: 32px auto 0;
+    }
+    
+    .pwa-list {
+      list-style-type: decimal;
+      padding-left: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    
+    /* Mobile specific adjustments */
+    @media (max-width: 767px) {
+      .content-card {
+        border-radius: 8px;
+      }
+    }
+  </style>
