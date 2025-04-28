@@ -1,47 +1,33 @@
+/* src/App.svelte */
 <script lang="ts">
-  import svelteLogo from './assets/svelte.svg'
-  import viteLogo from '/vite.svg'
   import Counter from './lib/Counter.svelte'
+  import WasmBasis from './lib/WasmBasis.svelte'
 </script>
 
-<main>
-  <div>
-    <a href="https://vite.dev" target="_blank" rel="noreferrer">
-      <img src={viteLogo} class="logo" alt="Vite Logo" />
-    </a>
-    <a href="https://svelte.dev" target="_blank" rel="noreferrer">
-      <img src={svelteLogo} class="logo svelte" alt="Svelte Logo" />
-    </a>
-  </div>
-  <h1>Vite + Svelte</h1>
-  <h2>Blank slate</h2>
-  <div class="card">
-    <Counter />
+<main class="container mx-auto p-4">
+  <h1 class="text-4xl font-bold text-center mb-2">Blank Slate</h1>
+  <h2 class="text-2xl font-medium text-center mb-8">Met WASM integratie</h2>
+  
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-3xl mx-auto">
+    <div class="card p-4 border rounded-lg">
+      <h3 class="text-xl font-bold mb-4">Counter Component</h3>
+      <Counter />
+      <p class="mt-4 text-sm text-gray-500">
+        Deze counter werkt via Svelte's state management
+      </p>
+    </div>
+
+    <div class="card p-4 border rounded-lg">
+      <WasmBasis />
+    </div>
   </div>
 
-  <p>
-    Check out <a href="https://github.com/sveltejs/kit#readme" target="_blank" rel="noreferrer">SvelteKit</a>, the official Svelte app framework powered by Vite!
-  </p>
-
-  <p class="read-the-docs">
-    Click on the Vite and Svelte logos to learn more
-  </p>
+  <div class="max-w-3xl mx-auto mt-8">
+    <h3 class="text-xl font-bold mb-4">PWA-functies testen:</h3>
+    <ol class="list-decimal pl-6 space-y-2">
+      <li>Schakel het netwerk uit en herlaad de pagina</li>
+      <li>Als de applicatie nog steeds werkt, functioneert de service worker correct</li>
+      <li>De counter en WASM-demo blijven werken, zelfs zonder internetverbinding</li>
+    </ol>
+  </div>
 </main>
-
-<style>
-  .logo {
-    height: 6em;
-    padding: 1.5em;
-    will-change: filter;
-    transition: filter 300ms;
-  }
-  .logo:hover {
-    filter: drop-shadow(0 0 2em #646cffaa);
-  }
-  .logo.svelte:hover {
-    filter: drop-shadow(0 0 2em #ff3e00aa);
-  }
-  .read-the-docs {
-    color: #888;
-  }
-</style>

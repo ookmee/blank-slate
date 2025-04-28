@@ -25,6 +25,7 @@
     "vite-plugin-pwa": "^1.0.0"
   },
   "dependencies": {
-    "svelte-i18n": "^4.0.1"
+    "svelte-i18n": "^4.0.1",
+    "token-engine": "file:./token-engine/pkg"
   }
 }
