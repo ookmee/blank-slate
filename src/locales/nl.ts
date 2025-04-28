@@ -1,4 +1,4 @@
-{
+export default {
     "nav": {
       "login": "Inloggen",
       "listen": "Luisteren",

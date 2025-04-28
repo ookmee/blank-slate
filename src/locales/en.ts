@@ -1,4 +1,4 @@
-{
+export default {
     "nav": {
       "login": "Login",
       "listen": "Listen",
