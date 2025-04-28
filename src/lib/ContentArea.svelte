@@ -3,6 +3,8 @@
     import { _, locale } from 'svelte-i18n';
     import Counter from './Counter.svelte';
     import WasmBasis from './WasmBasis.svelte';
+    import TokenStash from './TokenStash.svelte';
+    import TokenActions from './TokenActions.svelte';
     
     export let activeTab: string = 'login';
     
@@ -61,11 +63,11 @@
       
       {:else if activeTab === 'tokenStash'}
         <h2 class="content-title">{$_('bottomNav.tokenStash')}</h2>
-        <p>{$_('content.tokenStash')}</p>
+        <TokenStash />
       
       {:else if activeTab === 'tokenActions'}
         <h2 class="content-title">{$_('bottomNav.tokenActions')}</h2>
-        <p>{$_('content.tokenActions')}</p>
+        <TokenActions />
       
       {:else if activeTab === 'more'}
         <h2 class="content-title">{$_('bottomNav.more')}</h2>
@@ -96,6 +98,7 @@
               <li>Schakel het netwerk uit en herlaad de pagina</li>
               <li>Als de applicatie nog steeds werkt, functioneert de service worker correct</li>
               <li>De counter en WASM-demo blijven werken, zelfs zonder internetverbinding</li>
+              <li>Ook de token functionaliteit blijft volledig werken zonder internet!</li>
             </ol>
           </div>
         </div>
@@ -245,5 +248,10 @@
       .content-card {
         border-radius: 8px;
       }
+    }
+    
+    /* Extra margin util class */
+    .mb-24 {
+      margin-bottom: 24px;
     }
   </style>

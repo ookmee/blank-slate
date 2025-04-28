@@ -1,0 +1,399 @@
+/* 
+ * juice-common.css
+ * Gemeenschappelijke stijlen voor de Ɉuice PWA
+ */
+
+/* ---- CSS Variabelen (Custom Properties) ---- */
+:root {
+    /* Kleuren - Primair */
+    --j-color-primary: #2563eb;
+    --j-color-primary-dark: #1d4ed8;
+    --j-color-primary-light: #3b82f6;
+    --j-color-primary-bg: #eff6ff;
+  
+    /* Kleuren - Grijs */
+    --j-color-gray-900: #111827;
+    --j-color-gray-800: #1f2937;
+    --j-color-gray-700: #374151;
+    --j-color-gray-600: #4b5563;
+    --j-color-gray-500: #6b7280;
+    --j-color-gray-400: #9ca3af;
+    --j-color-gray-300: #d1d5db;
+    --j-color-gray-200: #e5e7eb;
+    --j-color-gray-100: #f3f4f6;
+    --j-color-gray-50: #f9fafb;
+  
+    /* Kleuren - Status */
+    --j-color-success: #059669;
+    --j-color-success-light: #d1fae5;
+    --j-color-error: #dc2626;
+    --j-color-error-light: #fee2e2;
+    --j-color-info: #1e40af;
+    --j-color-info-light: #dbeafe;
+  
+    /* Typografie */
+    --j-font-size-xs: 12px;
+    --j-font-size-sm: 14px;
+    --j-font-size-base: 16px;
+    --j-font-size-md: 18px;
+    --j-font-size-lg: 20px;
+    --j-font-size-xl: 24px;
+    --j-font-size-2xl: 36px;
+    --j-font-size-3xl: 48px;
+  
+    /* Fontgewichten */
+    --j-font-weight-regular: 400;
+    --j-font-weight-medium: 500;
+    --j-font-weight-semibold: 600;
+    --j-font-weight-bold: 700;
+    --j-font-weight-extrabold: 800;
+  
+    /* Spacing */
+    --j-spacing-xs: 4px;
+    --j-spacing-sm: 8px;
+    --j-spacing-md: 12px;
+    --j-spacing-base: 16px;
+    --j-spacing-lg: 24px;
+    --j-spacing-xl: 32px;
+    --j-spacing-2xl: 48px;
+  
+    /* Border Radius */
+    --j-radius-sm: 4px;
+    --j-radius-md: 6px;
+    --j-radius-base: 8px;
+    --j-radius-lg: 12px;
+    --j-radius-full: 9999px;
+  
+    /* Shadows */
+    --j-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+    --j-shadow-base: 0 1px 3px rgba(0, 0, 0, 0.1);
+    --j-shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+    --j-shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+  
+    /* Transitions */
+    --j-transition-fast: 0.2s;
+    --j-transition-normal: 0.3s;
+    --j-transition-slow: 0.5s;
+  }
+  
+  /* ---- Layout Componenten ---- */
+  
+  .j-container {
+    max-width: 1024px;
+    margin: 0 auto;
+    padding: 0 var(--j-spacing-base);
+  }
+  
+  .j-card {
+    background-color: white;
+    border-radius: var(--j-radius-lg);
+    box-shadow: var(--j-shadow-md);
+    padding: var(--j-spacing-lg);
+  }
+  
+  .j-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--j-spacing-lg);
+  }
+  
+  .j-card-title {
+    font-size: var(--j-font-size-lg);
+    font-weight: var(--j-font-weight-bold);
+    color: var(--j-color-primary);
+    margin: 0;
+  }
+  
+  .j-card-content {
+    margin-bottom: var(--j-spacing-lg);
+  }
+  
+  .j-card-footer {
+    border-top: 1px solid var(--j-color-gray-200);
+    padding-top: var(--j-spacing-lg);
+    margin-top: var(--j-spacing-lg);
+  }
+  
+  .j-divider {
+    height: 1px;
+    background-color: var(--j-color-gray-200);
+    margin: var(--j-spacing-lg) 0;
+  }
+  
+  /* ---- Typografie ---- */
+  
+  .j-title-xl {
+    font-size: var(--j-font-size-xl);
+    font-weight: var(--j-font-weight-bold);
+    color: var(--j-color-gray-900);
+    margin-bottom: var(--j-spacing-base);
+  }
+  
+  .j-title-lg {
+    font-size: var(--j-font-size-lg);
+    font-weight: var(--j-font-weight-bold);
+    color: var(--j-color-gray-900);
+    margin-bottom: var(--j-spacing-base);
+  }
+  
+  .j-title-md {
+    font-size: var(--j-font-size-md);
+    font-weight: var(--j-font-weight-semibold);
+    color: var(--j-color-gray-800);
+    margin-bottom: var(--j-spacing-sm);
+  }
+  
+  .j-text-base {
+    font-size: var(--j-font-size-base);
+    color: var(--j-color-gray-700);
+  }
+  
+  .j-text-sm {
+    font-size: var(--j-font-size-sm);
+    color: var(--j-color-gray-600);
+  }
+  
+  .j-text-xs {
+    font-size: var(--j-font-size-xs);
+    color: var(--j-color-gray-500);
+  }
+  
+  .j-text-center {
+    text-align: center;
+  }
+  
+  /* ---- Knoppen ---- */
+  
+  .j-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--j-spacing-md) var(--j-spacing-base);
+    border-radius: var(--j-radius-md);
+    font-weight: var(--j-font-weight-medium);
+    font-size: var(--j-font-size-base);
+    cursor: pointer;
+    transition: background-color var(--j-transition-fast), color var(--j-transition-fast), border-color var(--j-transition-fast);
+    border: none;
+    text-decoration: none;
+  }
+  
+  .j-button-primary {
+    background-color: var(--j-color-primary);
+    color: white;
+  }
+  
+  .j-button-primary:hover:not(:disabled) {
+    background-color: var(--j-color-primary-dark);
+  }
+  
+  .j-button-secondary {
+    background-color: var(--j-color-gray-100);
+    color: var(--j-color-gray-600);
+    border: 1px solid var(--j-color-gray-200);
+  }
+  
+  .j-button-secondary:hover:not(:disabled) {
+    background-color: var(--j-color-gray-200);
+  }
+  
+  .j-button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+  
+  .j-button-icon {
+    margin-right: var(--j-spacing-sm);
+    width: 1.25em;
+    height: 1.25em;
+  }
+  
+  .j-button-full {
+    width: 100%;
+  }
+  
+  /* ---- Formulier elementen ---- */
+  
+  .j-form-group {
+    margin-bottom: var(--j-spacing-base);
+  }
+  
+  .j-form-label {
+    display: block;
+    font-size: var(--j-font-size-sm);
+    font-weight: var(--j-font-weight-medium);
+    color: var(--j-color-gray-700);
+    margin-bottom: var(--j-spacing-sm);
+  }
+  
+  .j-form-input {
+    width: 100%;
+    padding: var(--j-spacing-md);
+    border: 1px solid var(--j-color-gray-300);
+    border-radius: var(--j-radius-sm);
+    font-size: var(--j-font-size-base);
+    transition: border-color var(--j-transition-fast);
+  }
+  
+  .j-form-input:focus {
+    outline: none;
+    border-color: var(--j-color-primary);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+  }
+  
+  .j-form-select {
+    width: 100%;
+    padding: var(--j-spacing-md);
+    border: 1px solid var(--j-color-gray-300);
+    border-radius: var(--j-radius-sm);
+    font-size: var(--j-font-size-base);
+    background-color: white;
+    transition: border-color var(--j-transition-fast);
+  }
+  
+  /* ---- Status berichten ---- */
+  
+  .j-status-message {
+    display: flex;
+    align-items: center;
+    padding: var(--j-spacing-md) var(--j-spacing-base);
+    border-radius: var(--j-radius-base);
+    margin-bottom: var(--j-spacing-base);
+  }
+  
+  .j-status-icon {
+    width: 20px;
+    height: 20px;
+    margin-right: var(--j-spacing-sm);
+  }
+  
+  .j-status-success {
+    background-color: var(--j-color-success-light);
+    color: var(--j-color-success);
+  }
+  
+  .j-status-error {
+    background-color: var(--j-color-error-light);
+    color: var(--j-color-error);
+  }
+  
+  .j-status-info {
+    background-color: var(--j-color-info-light);
+    color: var(--j-color-info);
+  }
+  
+  /* ---- Loading states ---- */
+  
+  @keyframes j-spin {
+    to { transform: rotate(360deg); }
+  }
+  
+  .j-loading-spinner {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    border: 2px solid rgba(0, 0, 0, 0.1);
+    border-top-color: var(--j-color-primary);
+    animation: j-spin 1s linear infinite;
+  }
+  
+  .j-loading-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: var(--j-spacing-xl) 0;
+  }
+  
+  /* ---- Specifieke componentstijlen: Token Component ---- */
+  
+  .j-token-symbol {
+    font-size: var(--j-font-size-2xl);
+    font-weight: var(--j-font-weight-bold);
+    color: var(--j-color-primary);
+  }
+  
+  .j-token-amount {
+    font-size: var(--j-font-size-3xl);
+    font-weight: var(--j-font-weight-extrabold);
+    color: var(--j-color-gray-900);
+  }
+  
+  .j-token-card {
+    background: linear-gradient(135deg, var(--j-color-primary-light) 0%, var(--j-color-primary) 100%);
+    border-radius: var(--j-radius-lg);
+    padding: var(--j-spacing-lg);
+    color: white;
+    box-shadow: 0 4px 6px rgba(37, 99, 235, 0.3);
+  }
+  
+  .j-transaction-item {
+    display: flex;
+    justify-content: space-between;
+    padding: var(--j-spacing-md) var(--j-spacing-base);
+    border-bottom: 1px solid var(--j-color-gray-100);
+  }
+  
+  .j-transaction-amount {
+    font-weight: var(--j-font-weight-semibold);
+  }
+  
+  .j-transaction-amount-positive {
+    color: var(--j-color-success);
+  }
+  
+  .j-transaction-amount-negative {
+    color: var(--j-color-error);
+  }
+  
+  /* ---- Responsiveness Utilities ---- */
+  
+  .j-hide-mobile {
+    display: none;
+  }
+  
+  @media (min-width: 640px) {
+    .j-hide-mobile {
+      display: block;
+    }
+    
+    .j-hide-desktop {
+      display: none;
+    }
+  }
+  
+  /* Grid systeem */
+  .j-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--j-spacing-base);
+  }
+  
+  @media (min-width: 640px) {
+    .j-grid-2 {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .j-grid-3 {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+  
+  /* ---- Spacing Utilities ---- */
+  
+  .j-mt-xs { margin-top: var(--j-spacing-xs); }
+  .j-mt-sm { margin-top: var(--j-spacing-sm); }
+  .j-mt-md { margin-top: var(--j-spacing-md); }
+  .j-mt-base { margin-top: var(--j-spacing-base); }
+  .j-mt-lg { margin-top: var(--j-spacing-lg); }
+  .j-mt-xl { margin-top: var(--j-spacing-xl); }
+  
+  .j-mb-xs { margin-bottom: var(--j-spacing-xs); }
+  .j-mb-sm { margin-bottom: var(--j-spacing-sm); }
+  .j-mb-md { margin-bottom: var(--j-spacing-md); }
+  .j-mb-base { margin-bottom: var(--j-spacing-base); }
+  .j-mb-lg { margin-bottom: var(--j-spacing-lg); }
+  .j-mb-xl { margin-bottom: var(--j-spacing-xl); }
+  
+  .j-mx-auto { margin-left: auto; margin-right: auto; }
