@@ -14,6 +14,50 @@ export default defineConfig({
       devOptions: {
         enabled: true
       },
+      workbox: {
+        // Cache strategie configureren
+        globPatterns: ['**/*.{js,css,html,ico,png,svg,webp,jpg,jpeg,json,wasm}'],
+        // Force caching voor NavigationRequests (SPA routes)
+        navigateFallback: 'index.html',
+        // Runtimecaching configuratie
+        runtimeCaching: [
+          {
+            urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'google-fonts-cache',
+              expiration: {
+                maxEntries: 10,
+                maxAgeSeconds: 60 * 60 * 24 * 365 // <== 1 jaar
+              }
+            }
+          },
+          {
+            urlPattern: /\.(?:png|jpg|jpeg|svg|webp)$/,
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'images-cache',
+              expiration: {
+                maxEntries: 60,
+                maxAgeSeconds: 60 * 60 * 24 * 30 // <== 30 dagen
+              }
+            }
+          },
+          {
+            urlPattern: /\.(?:js|css)$/,
+            handler: 'StaleWhileRevalidate',
+            options: {
+              cacheName: 'static-resources',
+              expiration: {
+                maxEntries: 60,
+                maxAgeSeconds: 60 * 60 * 24 * 2 // <== 2 dagen
+              }
+            }
+          }
+        ]
+      },
+      // Expliciet assets includeren
+      includeAssets: ['favicon.ico', 'robots.txt', 'apple-touch-icon.png'],
       manifest: {
         name: 'My PWA',
         short_name: 'MyPWA',
