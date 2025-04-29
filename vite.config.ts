@@ -8,7 +8,16 @@ import * as path from 'path'
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [
-    svelte(),
+    svelte({
+      // Dev mode inschakelen voor Svelte Devtools
+      dev: true,
+      compilerOptions: {
+        dev: true, // Compiler option to enable dev mode
+      },
+      // Je kunt ook debug expliciet inschakelen als dat nodig is
+      debug: true,
+      // debug: true
+    }),
     VitePWA({
       registerType: 'autoUpdate',
       devOptions: {
