@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>WASM Exports Test</title>
+</head>
+<body>
+  <h1>WASM Module Exports</h1>
+  <pre id="exports"></pre>
+
+  <script type="module">
+    async function checkExports() {
+      try {
+        // Import the WASM module
+        const wasmModule = await import("/token-engine/pkg/token_engine.js");
+        
+        // Log all available exports
+        console.log("Available exports:", Object.keys(wasmModule));
+        document.getElementById("exports").textContent = 
+          JSON.stringify(Object.keys(wasmModule), null, 2);
+      } catch (error) {
+        console.error("Error loading WASM module:", error);
+        document.getElementById("exports").textContent = 
+          "Error: " + error.message;
+      }
+    }
+
+    checkExports();
+  </script>
+</body>
+</html>

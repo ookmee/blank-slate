@@ -1,0 +1,1 @@
+PacketType: wasm_bindgen::describe::WasmDescribe

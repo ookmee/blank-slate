@@ -8,16 +8,7 @@ import * as path from 'path'
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [
-    svelte({
-      // Dev mode inschakelen voor Svelte Devtools
-      dev: true,
-      compilerOptions: {
-        dev: true, // Compiler option to enable dev mode
-      },
-      // Je kunt ook debug expliciet inschakelen als dat nodig is
-      debug: true,
-      // debug: true
-    }),
+    svelte(),
     VitePWA({
       registerType: 'autoUpdate',
       devOptions: {
@@ -105,6 +96,12 @@ export default defineConfig({
   build: {
     target: 'esnext',
     sourcemap: true
+  },
+  // Add an alias for the token-engine package
+  resolve: {
+    alias: {
+      'token-engine': path.resolve(__dirname, 'token-engine/pkg')
+    }
   },
   // Wasm ondersteuning voor import.meta.url, nodig voor WebAssembly.instantiateStreaming
   worker: {
