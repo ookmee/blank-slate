@@ -2,11 +2,11 @@ use wasm_bindgen::prelude::*;
 
 // Basic module structure
 mod core;
-mod debug;
 
 // Simple add function for 1+1=2 functionality
 #[wasm_bindgen]
 pub fn add(a: i32, b: i32) -> i32 {
+    // Simple addition
     a + b
 }
 

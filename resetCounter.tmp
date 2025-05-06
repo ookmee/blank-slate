@@ -1,0 +1,31 @@
+  // Reset WASM counter
+  function resetCounter() {
+    if (simpleCounter) {
+      try {
+        // For Calculator, we need to create a new counter since it doesn't have a reset() method
+        simpleCounter = Calculator.new(0);
+        counterValue = simpleCounter.get_value();
+        
+        operationStatus = {
+          success: true,
+          message: "WASM counter reset"
+        };
+        
+        if (showSuccessTimeout) {
+          clearTimeout(showSuccessTimeout);
+        }
+        
+        showSuccessTimeout = setTimeout(() => {
+          if (operationStatus?.success) {
+            operationStatus = null;
+          }
+        }, 3000);
+      } catch (err) {
+        console.error("Error resetting counter:", err);
+        operationStatus = {
+          success: false,
+          message: "Error resetting counter"
+        };
+      }
+    }
+  }

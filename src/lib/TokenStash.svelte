@@ -2,8 +2,8 @@
   import { onMount } from "svelte";
   import { IndexedDBService } from "./services/IndexedDBService";
   
-  // Import WASM module
-  import * as wasmModule from "token-engine/token_engine.js";
+  // Direct import approach
+  import init, { Calculator, add } from "token-engine";
   
   // State management
   let tokenBalance = $state(0);
@@ -18,6 +18,11 @@
   let wasmLoaded = $state(false);
   let counterValue = $state(0);
   let addResult = $state(0);
+  
+  // Custom logging function
+  function logDebug(module: string, operation: string, value: string, additionalInfo: string) {
+    console.log(`WASM_DEBUG_LOG:[${Date.now()}] [${module}] ${operation} = ${value} | ${additionalInfo}`);
+  }
   
   // Format date helper
   function formatDate(dateString: string): string {
@@ -35,38 +40,38 @@
     }
   }
   
-  // Initialize WASM module
+  // Initialize WASM module with direct imports
   async function initWasm() {
     try {
-      console.log("Starting WASM initialization...");
-      // Check what is available in the module
-      console.log("WASM module contents:", wasmModule);
+      console.log("Starting direct WASM initialization...");
       
-      // Initialize the module
-      if (wasmModule.default) {
-        await wasmModule.default();
-        console.log("WASM module initialized");
-      }
+      // Initialize the WASM module
+      await init();
+      console.log("WASM directly initialized");
       
-      // Test the add function
-      if (typeof wasmModule.add === "function") {
-        addResult = wasmModule.add(1, 1);
-        console.log("1 + 1 =", addResult);
-      }
+      // Log initialization
+      logDebug("TokenStash", "init", "success", "WASM module initialized in TokenStash");
       
-      // Try to create SimpleCounter
-      if (wasmModule.SimpleCounter) {
-        simpleCounter = new wasmModule.SimpleCounter();
-        console.log("SimpleCounter initialized");
-        counterValue = simpleCounter.value();
+      // Since SimpleCounter isn't available, let's use Calculator as an alternative
+      console.log("Looking for Calculator:", Calculator);
+      if (typeof Calculator === 'function') {
+        simpleCounter = Calculator.new(0);
+        console.log("Calculator initialized");
+        counterValue = simpleCounter.get_value();
+        logDebug("TokenStash", "calculator_created", "0", "Created calculator instance in TokenStash");
       } else {
-        console.warn("SimpleCounter not found in WASM module");
+        console.warn("Calculator not available after direct initialization");
+      }
+      
+      // Test add function
+      if (typeof add === 'function') {
+        addResult = add(1, 1);
+        console.log("Direct add result 1 + 1 =", addResult);
       }
       
       wasmLoaded = true;
-      console.log("WASM initialization complete");
     } catch (error) {
-      console.error("Failed to initialize WASM module:", error);
+      console.error("Failed to initialize WASM module directly:", error);
     }
   }
   
@@ -88,10 +93,18 @@
       if (balance) {
         tokenBalance = balance.amount;
         lastUpdated = formatDate(balance.lastUpdated);
+        
+        // Log balance loaded
+        logDebug("TokenStash", "balance_loaded", tokenBalance.toString(), 
+            `Token balance loaded: ${tokenBalance}, last updated: ${lastUpdated}`);
       }
       
       // Load recent transactions
       recentTransactions = await dbService.getRecentTransactions(5);
+      
+      // Log transactions loaded
+      logDebug("TokenStash", "transactions_loaded", recentTransactions.length.toString(), 
+          `Loaded ${recentTransactions.length} recent transactions`);
     }
     
     isLoading = false;
@@ -100,19 +113,32 @@
   // Toggle transaction history
   function toggleTransactionHistory() {
     showTransactions = !showTransactions;
+    
+    // Log the action
+    logDebug("TokenStash", "toggle_transactions", showTransactions ? "show" : "hide", 
+        `${showTransactions ? "Showing" : "Hiding"} transaction history`);
   }
   
   // WASM functions
   function incrementCounter() {
     if (simpleCounter) {
-      counterValue = simpleCounter.increment();
+      // Log the action
+      logDebug("TokenStash", "increment_counter", "1", "Incrementing counter");
+      
+      // For Calculator, use add(1) instead of increment()
+      counterValue = simpleCounter.add(1);
       console.log("Counter incremented to:", counterValue);
     }
   }
   
   function resetCounter() {
     if (simpleCounter) {
-      counterValue = simpleCounter.reset();
+      // Log the action
+      logDebug("TokenStash", "reset_counter", "0", "Resetting counter to zero");
+      
+      // For Calculator, we need to create a new counter since it doesn't have a reset() method
+      simpleCounter = Calculator.new(0);
+      counterValue = simpleCounter.get_value();
       console.log("Counter reset to:", counterValue);
     }
   }
@@ -121,6 +147,8 @@
     loadBalanceData();
   });
 </script>
+
+
 
 <div class="token-stash">
   <div class="token-balance-card">

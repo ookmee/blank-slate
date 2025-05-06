@@ -2,8 +2,8 @@
   import { onMount } from "svelte";
   import { IndexedDBService } from "./services/IndexedDBService";
   
-  // Import WASM module
-  import * as wasmModule from "token-engine/token_engine.js";
+  // Direct import approach
+  import init, { Calculator, add } from "token-engine";
   
   // State management
   let tokenAmount = $state(10);
@@ -19,6 +19,11 @@
   let counterValue = $state(0);
   let addResult = $state(0);
   
+  // Custom logging function
+  function logDebug(module: string, operation: string, value: string, additionalInfo: string) {
+    console.log(`WASM_DEBUG_LOG:[${Date.now()}] [${module}] ${operation} = ${value} | ${additionalInfo}`);
+  }
+  
   // Beschikbare token types
   const tokenTypes = [
     { id: "default", label: "Standaard Token" },
@@ -29,35 +34,35 @@
   // Initialize WASM module
   async function initWasm() {
     try {
-      console.log("Starting WASM initialization...");
-      // Check what is available in the module
-      console.log("WASM module contents:", wasmModule);
+      console.log("Starting direct WASM initialization...");
       
-      // Initialize the module
-      if (wasmModule.default) {
-        await wasmModule.default();
-        console.log("WASM module initialized");
-      }
+      // Initialize the WASM module
+      await init();
+      console.log("WASM directly initialized");
       
-      // Test the add function
-      if (typeof wasmModule.add === "function") {
-        addResult = wasmModule.add(5, 7);
-        console.log("5 + 7 =", addResult);
-      }
+      // Log initialization
+      logDebug("TokenActions", "init", "success", "WASM module initialized in TokenActions");
       
-      // Try to create SimpleCounter
-      if (wasmModule.SimpleCounter) {
-        simpleCounter = new wasmModule.SimpleCounter();
-        console.log("SimpleCounter initialized");
-        counterValue = simpleCounter.value();
+      // Since SimpleCounter isn't available, let's use Calculator as an alternative
+      console.log("Looking for Calculator:", Calculator);
+      if (typeof Calculator === 'function') {
+        simpleCounter = Calculator.new(0);
+        console.log("Calculator initialized");
+        counterValue = simpleCounter.get_value();
+        logDebug("TokenActions", "calculator_created", "0", "Created calculator instance in TokenActions");
       } else {
-        console.warn("SimpleCounter not found in WASM module");
+        console.warn("Calculator not available after direct initialization");
+      }
+      
+      // Test add function
+      if (typeof add === 'function') {
+        addResult = add(5, 7);
+        console.log("Direct add result 5 + 7 =", addResult);
       }
       
       wasmLoaded = true;
-      console.log("WASM initialization complete");
     } catch (error) {
-      console.error("Failed to initialize WASM module:", error);
+      console.error("Failed to initialize WASM module directly:", error);
     }
   }
   
@@ -89,10 +94,12 @@
       // Use WASM counter
       if (wasmLoaded && simpleCounter) {
         try {
-          // Increment counter for each token
-          for (let i = 0; i < tokenAmount; i++) {
-            counterValue = simpleCounter.increment();
-          }
+          // Log the operation
+          logDebug("TokenActions", "add_tokens", tokenAmount.toString(), 
+              `Adding ${tokenAmount} tokens to stash (${tokenType})`);
+          
+          // Increment counter for each token using Calculator's add method
+          counterValue = simpleCounter.add(tokenAmount);
           console.log(`Added ${tokenAmount} tokens, counter: ${counterValue}`);
         } catch (err) {
           console.error("Error using counter:", err);
@@ -109,6 +116,10 @@
           message: `${tokenAmount} tokens succesvol toegevoegd aan je saldo!`
         };
         
+        // Log success
+        logDebug("TokenActions", "tokens_added_to_db", tokenAmount.toString(), 
+            `Successfully added ${tokenAmount} tokens to database`);
+        
         // Reset amount
         tokenAmount = 10;
       } else {
@@ -116,6 +127,10 @@
           success: false,
           message: "Er is een fout opgetreden bij het toevoegen van tokens"
         };
+        
+        // Log error
+        logDebug("TokenActions", "tokens_add_error", "0", 
+            "Error adding tokens to database");
       }
     } catch (error) {
       operationStatus = {
@@ -123,6 +138,10 @@
         message: "Er is een onverwachte fout opgetreden"
       };
       console.error("Error adding tokens:", error);
+      
+      // Log error
+      logDebug("TokenActions", "unexpected_error", "0", 
+          `Unexpected error: ${error.message}`);
     } finally {
       isProcessing = false;
       
@@ -145,7 +164,12 @@
   function resetCounter() {
     if (simpleCounter) {
       try {
-        counterValue = simpleCounter.reset();
+        // Log the action
+        logDebug("TokenActions", "reset_counter", "0", "Resetting counter to zero");
+        
+        // For Calculator, we need to create a new counter since it doesn't have a reset() method
+        simpleCounter = Calculator.new(0);
+        counterValue = simpleCounter.get_value();
         
         operationStatus = {
           success: true,
@@ -180,6 +204,7 @@
     };
   });
 </script>
+
 
 <div class="token-actions">
   <div class="action-card">

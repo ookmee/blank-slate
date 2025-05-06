@@ -1,0 +1,464 @@
+<script lang="ts">
+  import { onMount } from "svelte";
+  import { IndexedDBService } from "./services/IndexedDBService";
+  
+  // Direct import approach
+  import init, { Calculator, add } from "token-engine";
+  
+  // State management
+  let tokenBalance = $state(0);
+  let lastUpdated = $state("");
+  let isLoading = $state(true);
+  let dbInitialized = $state(false);
+  let recentTransactions = $state<any[]>([]);
+  let showTransactions = $state(false);
+  
+  // WASM state
+  let simpleCounter = $state(null);
+  let wasmLoaded = $state(false);
+  let counterValue = $state(0);
+  let addResult = $state(0);
+  
+  // Format date helper
+  function formatDate(dateString: string): string {
+    try {
+      const date = new Date(dateString);
+      return new Intl.DateTimeFormat("nl-NL", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit"
+      }).format(date);
+    } catch (e) {
+      return dateString;
+    }
+  }
+  
+  // Initialize WASM module with direct imports
+  async function initWasm() {
+    try {
+      console.log("Starting direct WASM initialization...");
+      
+      // Initialize the WASM module
+      await init();
+      console.log("WASM directly initialized");
+      
+      // Since SimpleCounter isn't available, let's use Calculator as an alternative
+      console.log("Looking for Calculator:", Calculator);
+      if (typeof Calculator === 'function') {
+        simpleCounter = Calculator.new(0);
+        console.log("Calculator initialized");
+        counterValue = simpleCounter.get_value();
+      } else {
+        console.warn("Calculator not available after direct initialization");
+      }
+      
+      // Test add function
+      if (typeof add === 'function') {
+        addResult = add(1, 1);
+        console.log("Direct add result 1 + 1 =", addResult);
+      }
+      
+      wasmLoaded = true;
+    } catch (error) {
+      console.error("Failed to initialize WASM module directly:", error);
+    }
+  }
+  // DB initialiseren en saldo ophalen
+  async function loadBalanceData() {
+    isLoading = true;
+    
+    // Initialize WASM if not already done
+    if (!wasmLoaded) {
+      await initWasm();
+    }
+    
+    // Get local DB data
+    const dbService = IndexedDBService.getInstance();
+    dbInitialized = await dbService.initDB();
+    
+    if (dbInitialized) {
+      const balance = await dbService.getBalance();
+      if (balance) {
+        tokenBalance = balance.amount;
+        lastUpdated = formatDate(balance.lastUpdated);
+      }
+      
+      // Load recent transactions
+      recentTransactions = await dbService.getRecentTransactions(5);
+    }
+    
+    isLoading = false;
+  }
+  
+  // Toggle transaction history
+  function toggleTransactionHistory() {
+    showTransactions = !showTransactions;
+  }
+  
+  // WASM functions
+  function incrementCounter() {
+    if (simpleCounter) {
+      counterValue = simpleCounter.increment();
+      console.log("Counter incremented to:", counterValue);
+    }
+  }
+  
+  function resetCounter() {
+    if (simpleCounter) {
+      counterValue = simpleCounter.reset();
+      console.log("Counter reset to:", counterValue);
+    }
+  }
+  
+  onMount(() => {
+    loadBalanceData();
+  });
+</script>
+
+<div class="token-stash">
+  <div class="token-balance-card">
+    <div class="card-header">
+      <h3 class="card-title">Token Saldo</h3>
+      {#if !isLoading}
+        <button class="refresh-button" on:click={loadBalanceData}>
+          <svg xmlns="http://www.w3.org/2000/svg" class="refresh-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+          </svg>
+        </button>
+      {/if}
+    </div>
+    
+    {#if isLoading}
+      <div class="loading-spinner">
+        <div class="spinner"></div>
+        <p>Saldo laden...</p>
+      </div>
+    {:else if !dbInitialized}
+      <div class="error-message">
+        <svg xmlns="http://www.w3.org/2000/svg" class="error-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+        </svg>
+        <p>Kon geen verbinding maken met de database. Probeer de app opnieuw te laden.</p>
+      </div>
+    {:else}
+      <div class="balance-display">
+        <div class="token-symbol">Ɉ</div>
+        <div class="token-amount">{tokenBalance}</div>
+      </div>
+      
+      <div class="last-updated">
+        <p>Laatst bijgewerkt: {lastUpdated}</p>
+      </div>
+      
+      <!-- WASM Status Section -->
+      {#if wasmLoaded}
+        <div class="wasm-status">
+          <p class="wasm-info">WASM engine geladen (1 + 1 = {addResult})</p>
+          {#if simpleCounter}
+            <p class="wasm-balance">Counter waarde: {counterValue}</p>
+            <div class="wasm-buttons">
+              <button class="test-button" on:click={incrementCounter}>
+                Increment Counter
+              </button>
+              <button class="test-button" on:click={resetCounter}>
+                Reset Counter
+              </button>
+            </div>
+          {:else}
+            <p class="wasm-info">SimpleCounter niet gevonden</p>
+          {/if}
+        </div>
+      {:else}
+        <div class="wasm-status error">
+          <p>WASM engine niet geladen</p>
+        </div>
+      {/if}
+      
+      <button class="transaction-toggle" on:click={toggleTransactionHistory}>
+        {showTransactions ? "Verberg transactiegeschiedenis" : "Toon transactiegeschiedenis"}
+      </button>
+      
+      {#if showTransactions}
+        <div class="transaction-history">
+          <h4 class="history-title">Recente Transacties</h4>
+          
+          {#if recentTransactions.length > 0}
+            <ul class="transaction-list">
+              {#each recentTransactions as transaction}
+                <li class="transaction-item">
+                  <div class="transaction-amount {transaction.amount >= 0 ? "positive" : "negative"}">
+                    {transaction.amount >= 0 ? "+" : ""}{transaction.amount} Ɉ
+                  </div>
+                  <div class="transaction-details">
+                    <div class="transaction-type">{transaction.type}</div>
+                    <div class="transaction-date">{formatDate(transaction.timestamp)}</div>
+                  </div>
+                </li>
+              {/each}
+            </ul>
+          {:else}
+            <p class="no-transactions">Geen transacties gevonden</p>
+          {/if}
+        </div>
+      {/if}
+    {/if}
+  </div>
+
+  <div class="offline-detection">
+    <p class="offline-note">Deze pagina werkt zelfs offline dankzij PWA-functionaliteit!</p>
+  </div>
+</div>
+
+<style>
+  .token-stash {
+    max-width: 600px;
+    margin: 0 auto;
+  }
+  
+  .token-balance-card {
+    background-color: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    padding: 24px;
+    margin-bottom: 24px;
+  }
+  
+  .card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+  }
+  
+  .card-title {
+    font-size: 20px;
+    font-weight: 700;
+    color: #2563eb;
+    margin: 0;
+  }
+  
+  .refresh-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #4b5563;
+    transition: color 0.2s;
+  }
+  
+  .refresh-button:hover {
+    color: #2563eb;
+  }
+  
+  .refresh-icon {
+    width: 20px;
+    height: 20px;
+  }
+  
+  .loading-spinner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 32px 0;
+  }
+  
+  .spinner {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 3px solid #e5e7eb;
+    border-top-color: #3b82f6;
+    animation: spin 1s linear infinite;
+    margin-bottom: 16px;
+  }
+  
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+  
+  .error-message {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 24px;
+    background-color: #fee2e2;
+    border-radius: 8px;
+    color: #b91c1c;
+    text-align: center;
+  }
+  
+  .error-icon {
+    width: 32px;
+    height: 32px;
+    margin-bottom: 12px;
+  }
+  
+  .balance-display {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 32px 0;
+  }
+  
+  .token-symbol {
+    font-size: 36px;
+    font-weight: 700;
+    color: #2563eb;
+    margin-right: 8px;
+  }
+  
+  .token-amount {
+    font-size: 48px;
+    font-weight: 800;
+    color: #111827;
+  }
+  
+  .last-updated {
+    text-align: center;
+    color: #6b7280;
+    font-size: 14px;
+    margin-bottom: 24px;
+  }
+  
+  .wasm-status {
+    margin: 24px 0;
+    padding: 16px;
+    background-color: #eff6ff;
+    border-radius: 8px;
+    border-left: 4px solid #3b82f6;
+  }
+  
+  .wasm-status.error {
+    background-color: #fee2e2;
+    border-left-color: #dc2626;
+  }
+  
+  .wasm-info {
+    font-size: 14px;
+    color: #1e40af;
+    margin: 0 0 8px 0;
+  }
+  
+  .wasm-balance {
+    font-size: 16px;
+    font-weight: 600;
+    color: #2563eb;
+    margin: 0 0 12px 0;
+  }
+  
+  .wasm-buttons {
+    display: flex;
+    gap: 8px;
+  }
+  
+  .test-button {
+    flex: 1;
+    padding: 8px 12px;
+    background-color: #dbeafe;
+    border: 1px solid #93c5fd;
+    border-radius: 4px;
+    color: #1e40af;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s;
+  }
+  
+  .test-button:hover {
+    background-color: #bfdbfe;
+  }
+  
+  .transaction-toggle {
+    display: block;
+    width: 100%;
+    padding: 12px;
+    background-color: #f3f4f6;
+    border: 1px solid #e5e7eb;
+    border-radius: 6px;
+    color: #4b5563;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    margin-top: 16px;
+  }
+  
+  .transaction-toggle:hover {
+    background-color: #e5e7eb;
+  }
+  
+  .transaction-history {
+    margin-top: 24px;
+    padding-top: 16px;
+    border-top: 1px solid #e5e7eb;
+  }
+  
+  .history-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: #374151;
+    margin-bottom: 16px;
+  }
+  
+  .transaction-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  
+  .transaction-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 12px 16px;
+    border-bottom: 1px solid #f3f4f6;
+  }
+  
+  .transaction-item:last-child {
+    border-bottom: none;
+  }
+  
+  .transaction-amount {
+    font-weight: 600;
+    font-size: 16px;
+  }
+  
+  .transaction-amount.positive {
+    color: #059669;
+  }
+  
+  .transaction-amount.negative {
+    color: #dc2626;
+  }
+  
+  .transaction-details {
+    text-align: right;
+  }
+  
+  .transaction-type {
+    font-size: 14px;
+    color: #4b5563;
+  }
+  
+  .transaction-date {
+    font-size: 12px;
+    color: #9ca3af;
+  }
+  
+  .no-transactions {
+    text-align: center;
+    color: #6b7280;
+    padding: 16px;
+  }
+  
+  .offline-detection {
+    background-color: #dbeafe;
+    border-radius: 8px;
+    padding: 16px;
+    text-align: center;
+  }
+  
+  .offline-note {
+    color: #1e40af;
+    font-size: 14px;
+    margin: 0;
+  }
+</style>
