@@ -1,0 +1,17 @@
+// Add or ensure these optimizeDeps settings are in vite.config.ts
+optimizeDeps: {
+  exclude: ['token-engine'],
+  esbuildOptions: {
+    target: 'esnext'
+  }
+},
+build: {
+  target: 'esnext',
+  sourcemap: true
+},
+server: {
+  fs: {
+    // Allow serving files from one level up from the project root
+    allow: ['..']
+  }
+}

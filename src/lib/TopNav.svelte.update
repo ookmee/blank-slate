@@ -1,0 +1,20 @@
+<!-- This section should be added to your TopNav.svelte script tag -->
+  onMount(() => {
+    // Check if user is already logged in
+    const savedUsername = sessionStorage.getItem("currentUser");
+    if (savedUsername) {
+      username = savedUsername;
+    }
+    
+    // Listen for login events
+    const handleLogin = (event: CustomEvent) => {
+      username = event.detail.username;
+    };
+    
+    document.addEventListener('login', handleLogin as EventListener);
+    
+    // Cleanup on unmount
+    return () => {
+      document.removeEventListener('login', handleLogin as EventListener);
+    };
+  });

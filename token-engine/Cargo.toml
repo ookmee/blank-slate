@@ -17,6 +17,9 @@ js-sys = "0.3.64"
 serde = { version = "1.0", features = ["derive"] }
 serde-wasm-bindgen = "0.5.0"
 once_cell = "1.8.0"
+ed25519-dalek = "1.0.1"
+rand = "0.7.3"
+getrandom = { version = "0.2", features = ["js"] }
 
 [dependencies.web-sys]
 version = "0.3.64"

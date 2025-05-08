@@ -1,0 +1,11 @@
+// Add this import at the top
+import WasmTest from './WasmTest.svelte';
+
+// Add this to the login section
+{#if activeTab === 'login'}
+  <h2 class="content-title">{$_('nav.login')}</h2>
+  
+  <!-- Add the WasmTest component -->
+  <WasmTest />
+  
+  <!-- Rest of your login content... -->

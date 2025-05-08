@@ -1,13 +1,21 @@
 <!-- src/lib/ContentArea.svelte -->
 <script lang="ts">
   import { _, locale } from 'svelte-i18n';
+  import { onMount } from 'svelte';
   import Counter from './Counter.svelte';
   import WasmBasis from './WasmBasis.svelte';
   import TokenStash from './TokenStash.svelte';
   import TokenActions from './TokenActions.svelte';
   import Finalize from './Finalize.svelte';
+  import Identity from './Identity.svelte';
+  import TokenBatchManager from './TokenBatchManager.svelte';
   
-  export let activeTab: string = 'login';
+  // Using proper $props rune syntax
+  const { activeTab = 'login' } = $props();
+  
+  // Add state variables for login management
+  let isLoggedIn = $state(false);
+  let loggedInUsername = $state('');
   
   // Function to toggle language
   function toggleLanguage() {
@@ -28,13 +36,64 @@
       }
     }
   }
+  
+  // Add login event listener
+  onMount(() => {
+    // Check if user is already logged in
+    const savedUsername = sessionStorage.getItem("currentUser");
+    if (savedUsername) {
+      isLoggedIn = true;
+      loggedInUsername = savedUsername;
+    }
+    
+    // Listen for login events
+    const handleLogin = (event: CustomEvent) => {
+      isLoggedIn = true;
+      loggedInUsername = event.detail.username;
+    };
+    
+    document.addEventListener('login', handleLogin as EventListener);
+    
+    // Cleanup on unmount
+    return () => {
+      document.removeEventListener('login', handleLogin as EventListener);
+    };
+  });
+  
+  // Add logout function
+  function handleLogout() {
+    sessionStorage.removeItem("currentUser");
+    sessionStorage.removeItem("currentUserPublicKey");
+    isLoggedIn = false;
+    loggedInUsername = '';
+  }
 </script>
 
 <div class="content-area">
   <div class="content-card">
     {#if activeTab === 'login'}
       <h2 class="content-title">{$_('nav.login')}</h2>
-      <p>{$_('content.login')}</p>
+      
+      {#if isLoggedIn}
+        <div class="logged-in-container">
+          <div class="success-message">
+            <svg xmlns="http://www.w3.org/2000/svg" class="success-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+            </svg>
+            <p>You are logged in as <strong>{loggedInUsername}</strong></p>
+          </div>
+          
+          <button class="logout-button" on:click={handleLogout}>
+            Sign Out
+          </button>
+        </div>
+      {:else}
+        <Identity />
+      {/if}
+    
+    {:else if activeTab === 'tokenBatch'}
+      <h2 class="content-title">Token Batch Beheer</h2>
+      <TokenBatchManager />
     
     {:else if activeTab === 'listen'}
       <h2 class="content-title">{$_('nav.listen')}</h2>
@@ -258,5 +317,49 @@
   /* Extra margin util class */
   .mb-24 {
     margin-bottom: 24px;
+  }
+  
+  /* Logged in container styles */
+  .logged-in-container {
+    max-width: 400px;
+    margin: 0 auto;
+    background-color: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 24px;
+  }
+  
+  .success-message {
+    display: flex;
+    align-items: center;
+    padding: 12px 16px;
+    background-color: #d1fae5;
+    border-radius: 8px;
+    color: #065f46;
+    margin-bottom: 16px;
+  }
+  
+  .success-icon {
+    width: 20px;
+    height: 20px;
+    margin-right: 12px;
+    flex-shrink: 0;
+  }
+  
+  .logout-button {
+    width: 100%;
+    padding: 12px;
+    background-color: #ef4444;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+  }
+  
+  .logout-button:hover {
+    background-color: #dc2626;
   }
 </style>

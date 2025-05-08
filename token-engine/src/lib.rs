@@ -1,39 +1,39 @@
 use wasm_bindgen::prelude::*;
 
-// Basic module structure
-mod core;
-
-// Simple add function for 1+1=2 functionality
+// A simple function that returns a string
 #[wasm_bindgen]
-pub fn add(a: i32, b: i32) -> i32 {
-    // Simple addition
+pub fn greet(name: &str) -> String {
+    format!("Hello, {}!", name)
+}
+
+// A simple function to add two numbers
+#[wasm_bindgen]
+pub fn add_numbers(a: i32, b: i32) -> i32 {
     a + b
 }
 
-// Simple counter with no dependencies
+// A simple struct with minimal functionality
 #[wasm_bindgen]
-pub struct SimpleCounter {
-    count: i32,
+pub struct SimpleUser {
+    name: String,
 }
 
 #[wasm_bindgen]
-impl SimpleCounter {
+impl SimpleUser {
     #[wasm_bindgen(constructor)]
-    pub fn new() -> Self {
-        SimpleCounter { count: 0 }
+    pub fn new(name: &str) -> SimpleUser {
+        SimpleUser {
+            name: name.to_string(),
+        }
     }
 
-    pub fn value(&self) -> i32 {
-        self.count
+    #[wasm_bindgen]
+    pub fn get_name(&self) -> String {
+        self.name.clone()
     }
 
-    pub fn increment(&mut self) -> i32 {
-        self.count += 1;
-        self.count
-    }
-
-    pub fn reset(&mut self) -> i32 {
-        self.count = 0;
-        self.count
+    #[wasm_bindgen]
+    pub fn greet(&self) -> String {
+        format!("Hello, my name is {}!", self.name)
     }
 }
